@@ -4,7 +4,8 @@ import {
     StyleSheet, 
     Image, 
     TextInput, 
-    TouchableOpacity 
+    TouchableOpacity, 
+    ActivityIndicator
 } from 'react-native';
 
 import { useState } from 'react';
@@ -12,7 +13,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function SignIn(){
 
-    const { signIn } = useAuth();
+    const { signIn, loadingAuth } = useAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -50,7 +51,11 @@ export default function SignIn(){
                     onChangeText={setPassword}
                 />
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                    <Text style={styles.buttonText}>Acessar</Text> 
+                    { loadingAuth ? (
+                        <ActivityIndicator size={25} color='#FFF'/>
+                    ) : (
+                        <Text style={styles.buttonText}>Acessar</Text> 
+                    )}
                 </TouchableOpacity>
                 
             </View>
