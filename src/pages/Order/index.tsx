@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
+import { api } from '../../services/api';
 
 type RouteDetailParams = {
     Order: {
@@ -14,12 +15,27 @@ type OrderRouteProps = RouteProp<RouteDetailParams, 'Order'>
 export default function Order(){
 
     const route = useRoute<OrderRouteProps>();
+    const navigation = useNavigation();
+
+    async function handleCloseOrder(){
+        try{
+            await api.delete('/order', {
+                params: {
+                    order_id: route.params?.order_id
+                }
+            });
+
+            navigation.goBack();
+        }catch(e){
+            console.log(e);
+        }
+    }
 
     return(
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Mesa {route.params.table}</Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleCloseOrder}>
                     <Feather name='trash-2' size={28} color='#FF3F4B' />
                 </TouchableOpacity>
             </View>
@@ -46,7 +62,7 @@ export default function Order(){
 
             <View style={styles.actions}>
                 <TouchableOpacity style={styles.buttonAdd}>
-                    <Text style={styles.buttonText}>+</Text>
+                    <Text style={[styles.buttonText, {color: '#FFF', fontSize: 25}]}>+</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button}>
