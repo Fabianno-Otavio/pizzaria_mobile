@@ -103,15 +103,30 @@ export default function Order(){
             product_id: productSelected?.id,
             amount: Number(amount)
         });
+        
+        setItems(oldArray => oldArray.filter((item)=> item.id !== response.data.id));
 
         let data = {
             id: response.data.id,
             product_id: productSelected?.id as string,
             name: productSelected?.name as string,
-            amount: amount
-        }
+            amount: response.data.amount
+        };
 
         setItems(oldArray => [...oldArray, data]);
+    }
+
+    async function handleDeleteItem(item_id: string){
+
+       await api.delete('/order/item', {
+        params: {
+            item_id: item_id
+        }
+       });
+
+       let removeItem = items.filter((item)=> item.id !== item_id);
+
+       setItems(removeItem);
     }
 
     return(
@@ -119,9 +134,11 @@ export default function Order(){
 
             <View style={styles.header}>
                 <Text style={styles.title}>Mesa {route.params.table}</Text>
-                <TouchableOpacity onPress={handleCloseOrder}>
-                    <Feather name='trash-2' size={28} color='#FF3F4B' />
-                </TouchableOpacity>
+                {items.length === 0 && (
+                    <TouchableOpacity onPress={handleCloseOrder}>
+                        <Feather name='trash-2' size={28} color='#FF3F4B' />
+                    </TouchableOpacity>
+                )}
             </View>
 
             {category.length !== 0 && (
@@ -163,7 +180,7 @@ export default function Order(){
             style={{flex: 1, marginTop: 24}}
             data={items}
             keyExtractor={(item)=>item.id}
-            renderItem={({item})=> <ListItem data={item}/>}
+            renderItem={({item})=> <ListItem data={item} deleteItem={handleDeleteItem}/>}
             >
 
             </FlatList>
